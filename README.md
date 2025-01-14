@@ -1,7 +1,7 @@
 # Senade_llm_agent
 
 # Проект: Атакующий LLM-агент для Capture The Flag (CTF) Senade
-
+```
 my_ctf_project/
 ├─ app.py               # Входная точка (main, Gradio, запуск агента)
 ├─ agents/
@@ -15,7 +15,7 @@ my_ctf_project/
 ├─ utils/
 │   └─ final_answer_parser.py # StrictFinalAnswerParser
 └─ requirements.txt
-
+```
 
 ## 🧠 Атакующий LLM-агент
 
