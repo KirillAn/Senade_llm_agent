@@ -2,7 +2,7 @@
 
 # Проект: Атакующий LLM-агент для Capture The Flag (CTF) Senade
 ```
-my_ctf_project/
+senade_llm_agent/
 ├─ app.py               # Входная точка (main, Gradio, запуск агента)
 ├─ agents/
 │   └─ ctf_agent.py     # init_agent, настройка ZeroShotReact, tools
