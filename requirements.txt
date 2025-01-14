@@ -1,1 +1,14 @@
-
+torch==2.0.0
+transformers==4.46.3
+langchain==0.3.14
+langchain-community==0.3.14
+langchain-core==0.3.29
+langchain-experimental==0.3.4
+langchain-text-splitters==0.3.4
+networkx==2.8.8
+numpy==1.24.3
+gradio==4.25.0
+sentence-transformers==2.2.2
+pydantic==2.10.4
+pydantic-settings==2.7.1
+pydantic_core==2.27.2
