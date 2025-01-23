@@ -16,6 +16,31 @@ senade_llm_agent/
 │   └─ final_answer_parser.py # StrictFinalAnswerParser
 └─ requirements.txt
 ```
+```
+sequenceDiagram
+    participant U as User
+    participant GUI as Gradio UI
+    participant AG as Agent (Zero-Shot ReAct)
+    participant TK as Tool: ask_ctf_knowledge
+    participant RC as RAG Chain (RetrievalQA)
+    participant R as NetworkXRetriever
+    participant NX as networkx.Graph
+    participant LLM as LLM Pipeline (HuggingFacePipeline)
+
+    U->>GUI: Вводит вопрос
+    GUI->>AG: вызывает ask_agent(question)
+    AG->>TK: вызывает ask_ctf_knowledge(query)
+    TK->>RC: RAGChain.run(query)
+    RC->>R: get_relevant_documents(query)
+    R->>NX: поиск подходящих узлов (по эмбеддингам)
+    R-->>RC: возвращает top-k документов
+    RC->>LLM: передаёт query + контекст
+    LLM-->>RC: сгенерированный ответ
+    RC-->>TK: финальный текст ответа
+    TK-->>AG: инструмент возвращает готовый ответ
+    AG-->>GUI: возвращает строку ответа
+    GUI-->>U: выводит итоговый ответ
+```
 
 ## 🧠 Атакующий LLM-агент
 
