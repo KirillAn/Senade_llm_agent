@@ -16,66 +16,7 @@ senade_llm_agent/
 │   └─ final_answer_parser.py # StrictFinalAnswerParser
 └─ requirements.txt
 ```
-#### Архитектурная цепочка
-```mermaid
-flowchart LR
-    %% Говорим, что схема идёт слева направо (LR)
-    
-    subgraph GRADIO
-    UI[(Gradio Interface)]:::greenBox
-    askAgent((ask_agent)):::method
-    UI --> askAgent
-    end
 
-    subgraph AGENT
-    AG[(ZeroShotReAct Agent)]:::purpleBox
-    agentInit((initialize_agent)):::method
-    AG --> agentInit
-    end
-
-    subgraph RAG
-    RAGChain[(RetrievalQA\nRAG Chain)]:::blueBox
-    ragRun((run)):::method
-    RAGChain --> ragRun
-    end
-
-    subgraph RETRIEVER
-    NXRet[(NetworkXRetriever)]:::grayBox
-    nxDocs((get_relevant_documents)):::method
-    NXRet --> nxDocs
-    end
-
-    subgraph GRAPH
-    NxG[(networkx.Graph)]:::grayBox
-    storeEmb((store chunks + embeddings)):::method
-    NxG --> storeEmb
-    end
-
-    subgraph LLM
-    HF[(HuggingFacePipeline)]:::blueBox
-    hfGen((generate)):::method
-    HF --> hfGen
-    end
-
-    %% Допустим, есть Tool (ask_ctf_knowledge)
-    Tool[(Tool:\nask_ctf_knowledge)]:::grayBox
-
-    %% Связи между блоками
-    UI --> AG
-    AG --> RAGChain
-    RAGChain --> NXRet
-    NXRet --> NxG
-    RAGChain --> HF
-    AG --> Tool
-
-    %% Опционально оформим стили
-    classDef greenBox fill:#dafbe1,color:#333,stroke:#8dde98,stroke-width:2px
-    classDef purpleBox fill:#fce4ff,color:#333,stroke:#fcb0ff,stroke-width:2px
-    classDef blueBox fill:#d4efff,color:#333,stroke:#5dc8f4,stroke-width:2px
-    classDef grayBox fill:#f4f4f4,color:#333,stroke:#ccc,stroke-width:2px
-    classDef method fill:#fff,color:#333,stroke:#999,stroke-width:1px,stroke-dasharray:3 2
-
-```
 #### Логика работы
 ```mermaid
 flowchart TD
@@ -146,7 +87,68 @@ flowchart TD
 - Основная LLM: 
 - Фреймворк: 
 - База данных: 
-- Среда для выполнения атак: 
+- Среда для выполнения атак:
+
+  #### Архитектурная цепочка
+```mermaid
+flowchart LR
+    %% Говорим, что схема идёт слева направо (LR)
+    
+    subgraph GRADIO
+    UI[(Gradio Interface)]:::greenBox
+    askAgent((ask_agent)):::method
+    UI --> askAgent
+    end
+
+    subgraph AGENT
+    AG[(ZeroShotReAct Agent)]:::purpleBox
+    agentInit((initialize_agent)):::method
+    AG --> agentInit
+    end
+
+    subgraph RAG
+    RAGChain[(RetrievalQA\nRAG Chain)]:::blueBox
+    ragRun((run)):::method
+    RAGChain --> ragRun
+    end
+
+    subgraph RETRIEVER
+    NXRet[(NetworkXRetriever)]:::grayBox
+    nxDocs((get_relevant_documents)):::method
+    NXRet --> nxDocs
+    end
+
+    subgraph GRAPH
+    NxG[(networkx.Graph)]:::grayBox
+    storeEmb((store chunks + embeddings)):::method
+    NxG --> storeEmb
+    end
+
+    subgraph LLM
+    HF[(HuggingFacePipeline)]:::blueBox
+    hfGen((generate)):::method
+    HF --> hfGen
+    end
+
+    %% Допустим, есть Tool (ask_ctf_knowledge)
+    Tool[(Tool:\nask_ctf_knowledge)]:::grayBox
+
+    %% Связи между блоками
+    UI --> AG
+    AG --> RAGChain
+    RAGChain --> NXRet
+    NXRet --> NxG
+    RAGChain --> HF
+    AG --> Tool
+
+    %% Опционально оформим стили
+    classDef greenBox fill:#dafbe1,color:#333,stroke:#8dde98,stroke-width:2px
+    classDef purpleBox fill:#fce4ff,color:#333,stroke:#fcb0ff,stroke-width:2px
+    classDef blueBox fill:#d4efff,color:#333,stroke:#5dc8f4,stroke-width:2px
+    classDef grayBox fill:#f4f4f4,color:#333,stroke:#ccc,stroke-width:2px
+    classDef method fill:#fff,color:#333,stroke:#999,stroke-width:1px,stroke-dasharray:3 2
+
+```
 
 ### 🚀 Начало работы
 
