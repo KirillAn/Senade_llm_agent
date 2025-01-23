@@ -1,0 +1,11 @@
+version: "3.8"
+services:
+  my_ctf_project:
+    build: .
+    ports:
+      - "7860:7860"  # Пробрасываем порт 7860 наружу
+    volumes:
+      - ./data:/app/data  # Пробрасываем папку с данными внутрь контейнера
+    environment:
+      GRADIO_SERVER_PORT: 7860
+    command: python app.py
