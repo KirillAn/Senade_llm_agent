@@ -17,7 +17,7 @@ senade_llm_agent/
 └─ requirements.txt
 ```
 ```mermaid
-fflowchart LR
+flowchart LR
     %% Говорим, что схема идёт слева направо (LR)
     
     subgraph GRADIO
