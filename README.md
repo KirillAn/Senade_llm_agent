@@ -16,6 +16,7 @@ senade_llm_agent/
 │   └─ final_answer_parser.py # StrictFinalAnswerParser
 └─ requirements.txt
 ```
+#### Архитектурная цепочка
 ```mermaid
 flowchart LR
     %% Говорим, что схема идёт слева направо (LR)
@@ -75,6 +76,7 @@ flowchart LR
     classDef method fill:#fff,color:#333,stroke:#999,stroke-width:1px,stroke-dasharray:3 2
 
 ```
+#### Логика работы
 ```mermaid
 flowchart TD
     %% Схема сверху вниз (TD)
