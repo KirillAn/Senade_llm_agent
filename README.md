@@ -16,31 +16,66 @@ senade_llm_agent/
 │   └─ final_answer_parser.py # StrictFinalAnswerParser
 └─ requirements.txt
 ```
+```mermaid
+flowchart LR
+    %% Говорим, что схема идёт слева направо (LR)
+    
+    subgraph GRADIO
+        UI[(Gradio Interface)]:::greenBox
+        askAgent((ask_agent)):::method
+        UI --> askAgent
+    end
+    
+    subgraph AGENT
+        AG[(ZeroShotReAct Agent)]:::purpleBox
+        agentInit((initialize_agent)):::method
+        AG --> agentInit
+    end
+    
+    subgraph RAG
+        RAGChain[(RetrievalQA RAG Chain)]:::blueBox
+        ragRun((run)):::method
+        RAGChain --> ragRun
+    end
+    
+    subgraph RETRIEVER
+        NXRet[(NetworkXRetriever)]:::grayBox
+        nxDocs((get_relevant_documents)):::method
+        NXRet --> nxDocs
+    end
+    
+    subgraph GRAPH
+        NXGraph[(networkx.Graph (узлы, эмбеддинги))]:::grayBox
+        storeEmb((store chunks + embeddings)):::method
+        NXGraph --> storeEmb
+    end
+    
+    subgraph LLM
+        HF[(HuggingFacePipeline + LLaMA)]:::orangeBox
+        hfGen((generate)):::method
+        HF --> hfGen
+    end
+    
+    %% Взаимодействия между блоками
+    UI --> AG: "пользовательский запрос"
+    AG --> RAGChain: "Запуск RAG chain (через инструмент)"
+    RAGChain --> NXRet: "запрос get_relevant_documents"
+    NXRet --> NXGraph: "поиск top-k узлов"
+    NXRet --> RAGChain: "вернуть документы"
+    RAGChain --> HF: "контекст + запрос"
+    HF --> RAGChain: "сгенерированный ответ"
+    RAGChain --> AG: "итоговый текст"
+    AG --> UI: "возвращаем ответ пользователю"
+    
+    %% Оформление стилей
+    classDef greenBox fill:#dafbe1,color:#333,stroke:#8dde98,stroke-width:2px
+    classDef purpleBox fill:#fce4ff,color:#333,stroke:#fcb0ff,stroke-width:2px
+    classDef blueBox fill:#d4efff,color:#333,stroke:#5dc8f4,stroke-width:2px
+    classDef grayBox fill:#f4f4f4,color:#333,stroke:#ccc,stroke-width:2px
+    classDef orangeBox fill:#ffeacc,color:#333,stroke:#ffbe5c,stroke-width:2px
+    classDef method fill:#fff,color:#333,stroke:#999,stroke-width:1px,stroke-dasharray:3 2
 ```
-sequenceDiagram
-    participant U as User
-    participant GUI as Gradio UI
-    participant AG as Agent (Zero-Shot ReAct)
-    participant TK as Tool: ask_ctf_knowledge
-    participant RC as RAG Chain (RetrievalQA)
-    participant R as NetworkXRetriever
-    participant NX as networkx.Graph
-    participant LLM as LLM Pipeline (HuggingFacePipeline)
 
-    U->>GUI: Вводит вопрос
-    GUI->>AG: вызывает ask_agent(question)
-    AG->>TK: вызывает ask_ctf_knowledge(query)
-    TK->>RC: RAGChain.run(query)
-    RC->>R: get_relevant_documents(query)
-    R->>NX: поиск подходящих узлов (по эмбеддингам)
-    R-->>RC: возвращает top-k документов
-    RC->>LLM: передаёт query + контекст
-    LLM-->>RC: сгенерированный ответ
-    RC-->>TK: финальный текст ответа
-    TK-->>AG: инструмент возвращает готовый ответ
-    AG-->>GUI: возвращает строку ответа
-    GUI-->>U: выводит итоговый ответ
-```
 
 ## 🧠 Атакующий LLM-агент
 
