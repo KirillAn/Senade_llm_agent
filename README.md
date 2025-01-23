@@ -75,6 +75,39 @@ flowchart LR
     classDef method fill:#fff,color:#333,stroke:#999,stroke-width:1px,stroke-dasharray:3 2
 
 ```
+```mermaid
+flowchart TD
+    %% Схема сверху вниз (TD)
+
+    %% Основные блоки
+    documents[Source Documents JSON]:::yellowBox
+    createEmbeddings[Create Embeddings]:::blueBox
+    insertDB[Insert into Graph DB ]:::orangeBox
+    question[Ask Question]:::greenBox
+    LLM[LLM ]:::purpleBox
+    answer[Generate Answer]:::purpleBox
+
+    %% Блоки для поиска
+    search[Search Relevant Documents]:::grayBox
+    retriever[Retriever Graph DB]:::grayBox
+
+    %% Связи
+    documents --> createEmbeddings
+    createEmbeddings --> insertDB
+    insertDB --> retriever
+    question --> LLM
+    LLM --> answer
+    LLM --> search
+    search --> retriever
+
+    %% Стили блоков
+    classDef yellowBox fill:#fff3b3,color:#333,stroke:#ffd966,stroke-width:2px
+    classDef greenBox fill:#dafbe1,color:#333,stroke:#8dde98,stroke-width:2px
+    classDef blueBox fill:#d4efff,color:#333,stroke:#5dc8f4,stroke-width:2px
+    classDef purpleBox fill:#fce4ff,color:#333,stroke:#fcb0ff,stroke-width:2px
+    classDef orangeBox fill:#ffe5d1,color:#333,stroke:#ffa45b,stroke-width:2px
+    classDef grayBox fill:#f4f4f4,color:#333,stroke:#ccc,stroke-width:2px
+```
 
 
 ## 🧠 Атакующий LLM-агент
