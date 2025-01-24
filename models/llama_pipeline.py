@@ -1,17 +1,18 @@
 
+
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
 from langchain import HuggingFacePipeline
+import logging
 
-def create_llama_pipeline():
+def create_llama_pipeline(model_path: str) -> HuggingFacePipeline:
     """
-    Создаёт и возвращает LLaMA-модель обёрнутую в HuggingFacePipeline.
+    Создает и возвращает LLaMA pipeline.
     """
-    model_path = ".llama/checkpoints/Llama3.2-1B-Instruct"
-
+    logging.info("=== Создание LLaMA pipeline... ===")
+    
     tokenizer = AutoTokenizer.from_pretrained(model_path)
     model = AutoModelForCausalLM.from_pretrained(model_path)
-
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
 
@@ -22,9 +23,9 @@ def create_llama_pipeline():
         max_new_tokens=256,
         temperature=0.7,
         top_p=0.95,
-        repetition_penalty=1.15,
-        device=device  
+        repetition_penalty=1.15
+       
     )
-
     llama_model = HuggingFacePipeline(pipeline=generation_pipe)
+
     return llama_model
