@@ -23,13 +23,13 @@ def initialize_agent() -> RetrievalQA:
     Возвращает объект RetrievalQA.
     """
     logging.info("=== Инициализация агента... ===")
-    model_path = "/Users/kirillanosov/.llama/checkpoints/Llama3.2-1B-Instruct"
+    model_path = ".llama/checkpoints/Llama3.2-1B-Instruct"
 
     # Создаем LLaMA pipeline
     llama_model = create_llama_pipeline(model_path)
 
     logging.info("\n=== Подготовка данных и графа... ===")
-    folder_path = "/Users/kirillanosov/Desktop/Управление проектами/json_obj"
+    folder_path = "json_obj"
 
     # Ищем все файлы *.json в указанной папке
     json_files = glob.glob(os.path.join(folder_path, "*.json"))
