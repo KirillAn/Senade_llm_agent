@@ -52,6 +52,12 @@ flowchart TD
     classDef grayBox fill:#f4f4f4,color:#333,stroke:#ccc,stroke-width:2px
 ```
 
+#### Пример
+
+<pre>
+  <div id="header" align="center"> <img src=data/ezgif.com-optimize width="1000"/>
+  </div>
+</pre>
 
 ## 🧠 Атакующий LLM-агент
 
