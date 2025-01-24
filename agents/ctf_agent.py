@@ -1,39 +1,37 @@
 
+
 import os
 import json
 import tempfile
 import glob
-import torch
-import networkx as nx
+import logging
 
-from langchain import HuggingFacePipeline
-from langchain.agents import initialize_agent, AgentType, tool
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
-
-
-from models.llama_pipeline import create_llama_pipeline
-from retrievers.networkx_retriever import NetworkXRetriever
-from retrievers.final_answer_parser import StrictFinalAnswerParser
 from langchain.document_loaders import TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.schema import Document
 
-def init_agent():
+from models.llama_pipeline import create_llama_pipeline
+from retrievers.networkx_retriever import NetworkXRetriever
+
+import networkx as nx
+
+def initialize_agent() -> RetrievalQA:
     """
-    Инициализация модели, создание графа и настройка агента.
-    Возвращает объект agent, готовый к работе.
+    Инициализирует модель, загрузчик данных, граф, эмбеддинги и цепочку RetrievalQA.
+    Возвращает объект RetrievalQA.
     """
-    print("=== Инициализация модели... ===")
-    
-    # 1) pipeline LLaMA 
-    llama_model = create_llama_pipeline()
+    logging.info("=== Инициализация агента... ===")
+    model_path = "/Users/kirillanosov/.llama/checkpoints/Llama3.2-1B-Instruct"
 
-    print("\n=== Подготовка данных и графа... ===")
-    folder_path = "data"  # <-- папка, где лежат *.json
+    # Создаем LLaMA pipeline
+    llama_model = create_llama_pipeline(model_path)
 
-    
+    logging.info("\n=== Подготовка данных и графа... ===")
+    folder_path = "/Users/kirillanosov/Desktop/Управление проектами/json_obj"
+
+    # Ищем все файлы *.json в указанной папке
     json_files = glob.glob(os.path.join(folder_path, "*.json"))
 
     all_data = []
@@ -51,54 +49,44 @@ def init_agent():
         tmp_file_path = tmp.name
         tmp.write(big_text)
 
-    # Загружаем и нарезаем
     loader = TextLoader(tmp_file_path, encoding="utf-8")
     documents = loader.load()
 
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
     docs = text_splitter.split_documents(documents)
-    print(f"Чанков после нарезки: {len(docs)}")
+    logging.info(f"Чанков после нарезки: {len(docs)}")
 
-    print("=== Создаём graph + embeddings ===")
+    logging.info("=== Создаём граф и эмбеддинги... ===")
     G = nx.Graph()
+
     embeddings_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
     for i, doc in enumerate(docs):
         [chunk_emb] = embeddings_model.embed_documents([doc.page_content])
         G.add_node(i, content=doc.page_content, embedding=chunk_emb)
 
-    print(f"Всего узлов в графе: {G.number_of_nodes()}")
+    logging.info(f"Всего узлов в графе: {G.number_of_nodes()}")
 
-    print("=== Настройка агента... ===")
+    logging.info("=== Настройка RetrievalQA... ===")
     graph_retriever = NetworkXRetriever(graph=G, embeddings=embeddings_model, k=3)
+
+   
+    custom_prompt = PromptTemplate.from_template("""
+You are an assistant that provides concise and direct answers to questions without any additional explanations.
+
+Context: {context}
+
+Question: {question}
+Final Answer:
+""")
 
     rag_chain = RetrievalQA.from_chain_type(
         llm=llama_model,
-        chain_type="stuff",
+        chain_type="stuff",  
+        chain_type_kwargs={"prompt": custom_prompt},
         retriever=graph_retriever,
         return_source_documents=False
+       
     )
 
-    @tool
-    def ask_ctf_knowledge(query: str) -> str:
-        """Отвечает на вопросы по теме CTF, используя RetrievalQA + наш граф."""
-        return rag_chain.run(query)
-
-    tools = [ask_ctf_knowledge]
-
-    custom_prompt = PromptTemplate.from_template("""
-Question: {input}
-Final Answer: {output}
-""")
-
-    agent = initialize_agent(
-        tools=tools,
-        llm=llama_model,
-        agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
-        verbose=False,
-        agent_kwargs={"prompt": custom_prompt},
-        output_parser=StrictFinalAnswerParser()
-    )
-
-    print("=== АГЕНТ ГОТОВ ===\n")
-    return agent
+    return rag_chain
