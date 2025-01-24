@@ -55,7 +55,7 @@ flowchart TD
 #### Пример
 
 <pre>
-  <div id="header" align="center"> <img src=data/ezgif_example.gif width="1000"/>
+  <div id="header" align="center"> <img src=data/ezgif.com-video-to-gif-converter.gif width="1000"/>
   </div>
 </pre>
 
