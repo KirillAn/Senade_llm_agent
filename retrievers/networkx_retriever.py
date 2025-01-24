@@ -1,13 +1,15 @@
 
+
 import networkx as nx
 import numpy as np
-from pydantic import PrivateAttr
 from langchain.schema import Document, BaseRetriever
 from langchain.embeddings import HuggingFaceEmbeddings
+from pydantic import PrivateAttr
 
 class NetworkXRetriever(BaseRetriever):
     """
-    Ретривер на основе графа NetworkX. 
+    Ретривер на основе графа NetworkX. Хранит документы в узлах,
+    делает поиск по косинусной близости к embedding.
     """
     _graph: nx.Graph = PrivateAttr()
     _embeddings: HuggingFaceEmbeddings = PrivateAttr()
@@ -44,7 +46,7 @@ class NetworkXRetriever(BaseRetriever):
         for node_id, sim in top_nodes:
             content = self._graph.nodes[node_id]["content"]
             docs.append(Document(
-                page_content=content,
+                page_content=content, 
                 metadata={"score": sim, "node_id": node_id}
             ))
         return docs
